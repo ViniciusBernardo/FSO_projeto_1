@@ -86,10 +86,8 @@ int main(){
     g_shm_id = shmget(SHM_KEY, 10*sizeof(message), IPC_CREAT | 0666);
     msg_shared = (message *) shmat(g_shm_id, NULL, 0);
 
-    printf("\n%lu", sizeof(msg_shared));
-    if(msg_shared == (message *) -1){
-        printf("\nDeu ruim\n");
-        exit(0);
+    while(strcmp(msg_shared->text, "") == 0){
+
     }
     //while(1){
     char input[100];
