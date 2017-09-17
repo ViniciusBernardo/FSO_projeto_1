@@ -24,14 +24,14 @@ typedef struct {
   char msg[sizeof(message)];
 } message_buffer;
 
-void getMessage(int id_message, message *msg_shared){
+void getMessage(int id_message, message *msg_shared, int num_messages){
   printf("\nFilho A recebendo mensagem e escrevendo na mem shared\n");
 
   message_buffer msg_buffer;
 
   message *msg_ptr = (message *)(msg_buffer.msg);
 
-for(int i = 0; i < 10;i++){
+for(int i = 0; i < num_messages;i++){
   if( msgrcv(id_message, (struct msgbuf *) &msg_buffer,
              sizeof(message), 1, 0) == -1){
     fprintf(stderr, "Impossivel receber mensagem!\n");
@@ -43,25 +43,21 @@ for(int i = 0; i < 10;i++){
 }
 }
 
-void sendMessage(int id_message, char *input, int count_msg){
+void sendMessage(int id_message, char *input, int num_message){
 
-  printf("\nPai A mandando mensagem na fila\n");
+  printf("\nPai A mandando lista de mensagens na fila\n");
   message_buffer msg_buffer;
 
   message *msg_ptr = (message *)(msg_buffer.msg);
 
-for(int i = 0; i < 10;i++){
   msg_buffer.type_msg = 1;
-  msg_ptr->msg_num = i;
+  msg_ptr->msg_num = num_message;
   strcpy(msg_ptr->text, input);
   if(msgsnd(id_message, (struct msgbuf *) &msg_buffer,
              sizeof(message),0) == -1){
     fprintf(stderr, "Impossivel enviar mensagem!\n");
     exit(1);
   }
-
-  usleep(20);
-}
 }
 int main(){
 
@@ -75,36 +71,36 @@ int main(){
     exit(1);
   }
 
-  pid = fork();
-
-  if(pid == 0){ /*Processo filho*/
-    //usleep(10);
-    int g_shm_id;
-    message *msg_shared;
-
-    g_shm_id = shmget(SHM_KEY, 10*sizeof(message), IPC_CREAT | 0666);
-    msg_shared = (message *) shmat(g_shm_id, NULL, 0);
-
-    //while(1){
-      getMessage(id_message, msg_shared);
-		exit(0);
-    //}
-
-  } else { /*Processo Pai*/
+  //pid = fork();
 
     char input[100];
     int count_msg = 0;
-    //while(strcmp(input, "sair") != 0){
-      //scanf("%s", input);
-      //if((strcmp(input, "\n") != 0) || (strlen(input) > 1)){
+    while(1){
+      scanf("%s", input);
+      if(strcmp(input, "sair") == 0) break;
+      if((strcmp(input, "\n") != 0) || (strlen(input) > 1)){
+         sendMessage(id_message, input, count_msg);
          count_msg++;
-         sendMessage(id_message, "xablau55", count_msg);
-      //}
-    //}
+      }
+    }
+
+    pid = fork();
+
+    if(pid == 0){
+        int g_shm_id;
+        message *msg_shared;
+
+        g_shm_id = shmget(SHM_KEY, 10*sizeof(message), IPC_CREAT | 0666);
+        msg_shared = (message *) shmat(g_shm_id, NULL, 0);
+
+        getMessage(id_message, msg_shared, count_msg);
+        exit(0);
+    } else {
+      wait(NULL);
+    }
 		
     //if( msgctl(id_message,IPC_RMID,NULL) != 0 ) {
     //  fprintf(stderr,"Impossivel remover a fila!\n");
     //  exit(1);
     //}
-  }
 }
