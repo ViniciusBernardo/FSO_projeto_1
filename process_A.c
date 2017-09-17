@@ -30,15 +30,17 @@ void getMessage(int id_message){
 
   message *msg_ptr = (message *)(msg_buffer.msg);
 
+for(int i = 0; i < 10;i++){
   if( msgrcv(id_message, (struct msgbuf *) &msg_buffer,
              sizeof(message), 1, 0) == -1){
     //printf("Um erro inesperado aconteceu!\n");
     fprintf(stderr, "Impossivel receber mensagem!\n");
-    exit(1);
+  //  exit(1);
   }
 
-  //printf("%s", msg_ptr->text);
+  printf("%s", msg_ptr->text);
   printf("\nOla mundo\n");
+}
 }
 
 void sendMessage(int id_message, char *input, int count_msg){
@@ -48,10 +50,10 @@ void sendMessage(int id_message, char *input, int count_msg){
 
   message *msg_ptr = (message *)(msg_buffer.msg);
 
+for(int i = 0; i < 10;i++){
   msg_buffer.type_msg = 1;
-  msg_ptr->msg_num = count_msg;
+  msg_ptr->msg_num = i;
   strcpy(msg_ptr->text, input);
-
   if(msgsnd(id_message, (struct msgbuf *) &msg_buffer,
              sizeof(message),0) == -1){
       fprintf(stderr, "Impossivel enviar mensagem!\n");
@@ -59,9 +61,9 @@ void sendMessage(int id_message, char *input, int count_msg){
     exit(1);
   }
 
-  usleep(50);
+  usleep(20);
 }
-
+}
 int main(){
 
   int pid;
@@ -77,11 +79,12 @@ int main(){
   pid = fork();
 
   if(pid == 0){ /*Processo filho*/
-    usleep(10);
+    //usleep(10);
 
     printf("\nEntrou no filho\n");
     //while(1){
       getMessage(id_message);
+		exit(0);
     //}
 
   } else { /*Processo Pai*/
@@ -96,7 +99,7 @@ int main(){
          sendMessage(id_message, "xablau55", count_msg);
       //}
     //}
-
+		
     if( msgctl(id_message,IPC_RMID,NULL) != 0 ) {
       fprintf(stderr,"Impossivel remover a fila!\n");
       exit(1);
