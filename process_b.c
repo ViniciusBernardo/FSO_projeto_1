@@ -99,17 +99,11 @@ int main(){
       exit(0);
 
   } else { /*Processo Pai*/
-	sleep(5);
-    //while(strcmp(input, "sair") != 0){
-      //scanf("%s", input);
-      //if((strcmp(input, "\n") != 0) || (strlen(input) > 1)){
+	  sleep(5);
       getMessage(id_message);
-      //}
-    //}
-		
-/*    if( msgctl(id_message,IPC_RMID,NULL) != 0 ) {
-      fprintf(stderr,"Impossivel remover a fila!\n");
-      exit(1);
-    }*/
-  }
+      if(msgctl(id_message, IPC_RMID, NULL) != 0){
+         fprintf(stderr, "Impossivel remover a fila!\n");
+         exit(1);
+      }
+    }
 }

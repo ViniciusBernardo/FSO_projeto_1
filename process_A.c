@@ -97,10 +97,10 @@ int main(){
         exit(0);
     } else {
       wait(NULL);
+      if( msgctl(id_message,IPC_RMID,NULL) != 0 ) {
+        fprintf(stderr,"Impossivel remover a fila!\n");
+        exit(1);
+      }
     }
 		
-    //if( msgctl(id_message,IPC_RMID,NULL) != 0 ) {
-    //  fprintf(stderr,"Impossivel remover a fila!\n");
-    //  exit(1);
-    //}
 }
