@@ -16,7 +16,7 @@
 
 typedef struct {
   unsigned int msg_num;
-  char text[100];
+  char text[140];
 } message;
 
 typedef struct {
@@ -37,9 +37,10 @@ for(int i = 0; i < 10;i++){
     fprintf(stderr, "Impossivel receber mensagem!\n");
     exit(1);
   }
-
-  printf("\n%s", msg_ptr->text);
-  printf("\n%d", msg_ptr->msg_num);
+  if(strcmp(msg_ptr->text, "") == 0){
+    break;
+  }
+  printf("\nMensagem (%d): %s\n", msg_ptr->msg_num, msg_ptr->text);
 }
 }
 
@@ -90,7 +91,7 @@ int main(){
 
     }
     //while(1){
-    char input[100];
+    char input[140];
     int count_msg = 0;
          count_msg++;
          sendMessage(id_message, msg_shared);

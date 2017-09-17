@@ -16,7 +16,7 @@
 
 typedef struct {
   unsigned int msg_num;
-  char text[100];
+  char text[140];
 } message;
 
 typedef struct {
@@ -25,7 +25,7 @@ typedef struct {
 } message_buffer;
 
 void getMessage(int id_message, message *msg_shared, int num_messages){
-  printf("\nFilho A recebendo mensagem e escrevendo na mem shared\n");
+  printf("\nFilho A recebendo mensagem e escrevendo na memoria compartilhada...\n");
 
   message_buffer msg_buffer;
 
@@ -45,7 +45,7 @@ for(int i = 0; i < num_messages;i++){
 
 void sendMessage(int id_message, char *input, int num_message){
 
-  printf("\nPai A mandando lista de mensagens na fila\n");
+  printf("\nPai A preechendo fila de mensagens\n");
   message_buffer msg_buffer;
 
   message *msg_ptr = (message *)(msg_buffer.msg);
@@ -71,13 +71,14 @@ int main(){
     exit(1);
   }
 
-  //pid = fork();
 
-    char input[100];
+    char input[140];
     int count_msg = 0;
+    printf("\nNumero de mensagens permitidas: 10");
     while(1){
-      scanf("%s", input);
-      if(strcmp(input, "sair") == 0) break;
+      printf("\nEntre com uma mensagem de no maximo 140 caracteres: ");
+      scanf("%[^\n]%*c", input);
+      if(strcmp(input, "sair") == 0 || count_msg == 10) break;
       if((strcmp(input, "\n") != 0) || (strlen(input) > 1)){
          sendMessage(id_message, input, count_msg);
          count_msg++;
